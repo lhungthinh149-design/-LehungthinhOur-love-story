@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Love Story - Cuốn Album Kỷ Niệm Tình Yêu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rose-gold': '#B76E79',
+                        'blush': '#FFE4E1',
+                        'soft-pink': '#FFF0F5',
+                        'burgundy': '#800020',
+                        'gold': '#D4AF37',
+                        'warm-cream': '#FAF0E6'
+                    },
+                    fontFamily: {
+                        'serif': ['"Playfair Display"', 'serif'],
+                        'script': ['"Dancing Script"', 'cursive'],
+                        'vibes': ['"Great Vibes"', 'cursive'],
+                        'sans': ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & CSS 3D Book Animation */
+        :root {
+            --cover-bg: linear-gradient(135deg, #fbcfe8 0%, #f472b6 50%, #ec4899 100%);
+            --cover-border: #f472b6;
+            --body-bg: linear-gradient(135deg, #fff5f7 0%, #ffe4e6 40%, #fce7f3 70%, #fbcfe8 100%);
+            --body-img: none;
+        }
+
+        body {
+            background: var(--body-bg);
+            background-image: var(--body-img);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+            transition: background 0.5s ease;
+        }
+
+        /* Ambient floating hearts canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 3D Flipbook Structure - Rigid 3D Viewport */
+        .book-container {
+            perspective: 2200px;
+            perspective-origin: 50% 50%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .book {
+            position: relative;
+            width: 340px;
+            height: 500px;
+            transform-style: preserve-3d;
+            box-shadow: 0 25px 50px -12px rgba(225, 29, 72, 0.25), 0 10px 25px -5px rgba(244, 114, 182, 0.3);
+            border-radius: 36px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .book {
+                width: 420px;
+                height: 580px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .book {
+                width: 480px;
+                height: 640px;
+                border-radius: 42px;
+            }
+        }
+
+        /* Hiệu ứng gáy lò xo chân thật (Realistic Spiral Binding) */
+        .spiral-binding {
+            position: absolute;
+            left: -14px;
+            top: 20px;
+            bottom: 20px;
+            width: 24px;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .spiral-ring {
+            width: 24px;
+            height: 14px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 30%, #64748b 70%, #334155 100%);
+            border-radius: 12px;
+            box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.9), inset 0 -2px 3px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        
+        .spiral-ring::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            right: 4px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 2px;
+        }
+
+        /* Fixed Sheet 3D Layout */
+        .page {
+            position: absolute;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            transform-origin: left center;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            border-radius: 16px 36px 36px 16px;
+            cursor: pointer;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .page {
+                border-radius: 16px 42px 42px 16px;
+            }
+        }
+
+        .page-front, .page-back {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+            -webkit-backface-visibility: hidden !important;
+            backface-visibility: hidden !important;
+            border-radius: 16px 36px 36px 16px;
+            overflow: hidden;
+            box-shadow: inset 8px 0 20px rgba(225,29,72,0.1), inset -4px 0 12px rgba(0,0,0,0.04);
+        }
+
+        @media (min-width: 768px) {
+            .page-front {
+                border-radius: 16px 42px 42px 16px;
+            }
+            .page-back {
+                border-radius: 42px 16px 16px 42px;
+            }
+        }
+
+        .page-back {
+            transform: rotateY(180deg) !important;
+            border-radius: 36px 16px 16px 36px;
+        }
+
+        /* Dynamic Flipped State */
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* Spine and Book Shadow Effect */
+        .spine-shadow {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(to right, rgba(190, 24, 93, 0.22) 0%, rgba(244, 114, 182, 0.06) 70%, rgba(0,0,0,0) 100%);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* Scrapbook Decorative Tape & Stamps */
+        .washi-tape {
+            background: rgba(253, 242, 248, 0.95);
+            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.12);
+            backdrop-filter: blur(2px);
+            border-left: 2px dashed rgba(244, 114, 182, 0.5);
+            border-right: 2px dashed rgba(244, 114, 182, 0.5);
+        }
+
+        .paper-texture {
+            background-color: #fffafc;
+            background-image: radial-gradient(#f472b6 0.65px, transparent 0.65px), radial-gradient(#f472b6 0.65px, #fffafc 0.65px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
+        }
+
+        .leather-cover {
+            background: var(--cover-bg) !important;
+            border: 6px solid #ffffff !important;
+            box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.7), 0 15px 35px rgba(236, 72, 153, 0.3) !important;
+            transition: background 0.5s ease, border-color 0.5s ease;
+        }
+
+        /* Gold/Rose Gold Soft Borders */
+        .gold-border {
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6), 0 0 15px rgba(244, 114, 182, 0.3);
+            border-radius: 28px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 228, 230, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 3px;
+        }
+
+        /* Dynamic Heart Glow */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.85; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
+        }
+        .pulse-element {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        /* Custom Radio Button for Stickers */
+        .sticker-option input:checked + div {
+            border-color: #ec4899;
+            background-color: #fce7f3;
+            color: #be185d;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 flex flex-col justify-between items-center relative overflow-x-hidden">
+
+    <!-- Ambient Floating Hearts Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Copyright / Credit Watermark -->
+    <div class="fixed bottom-3 left-3 z-50 bg-white/70 backdrop-blur-md px-3 py-1 rounded-full border border-pink-200/60 shadow-sm text-[11px] font-mono text-rose-600/90 font-semibold flex items-center gap-1">
+        <i class="fa-regular fa-copyright text-xs"></i> cre: lhungthinh149@gmail.com
+    </div>
+
+    <!-- Top Navigation & Love Clock Bar -->
+    <header class="w-full z-20 px-4 py-3 bg-white/75 backdrop-blur-md border-b border-rose-200/60 flex flex-wrap justify-between items-center gap-3 text-gray-800 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-rose-400 flex items-center justify-center text-white text-lg shadow-md cursor-pointer hover:scale-105 transition-transform" onclick="openSettingsModal()" title="Cài đặt thông tin cặp đôi">
+                <i class="fa-solid fa-heart"></i>
+            </div>
+            <div>
+                <h1 class="font-script text-2xl text-rose-600 font-bold leading-tight flex items-center gap-2" id="headerNames">
+                    <span>Thịnh & Ánh</span>                   
+                </h1>
+                <p class="text-[10px] sm:text-xs text-rose-400 font-sans tracking-widest uppercase font-semibold">Our Memory Album</p>
+            </div>
+        </div>
+
+        <div class="bg-pink-50/90 border border-pink-200 px-4 py-1.5 rounded-full flex items-center space-x-2 text-xs md:text-sm shadow-inner">
+            <span class="text-rose-500 font-medium flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left text-xs animate-spin" style="animation-duration: 8s;"></i> Bên nhau:
+            </span>
+            <div id="loveTimer" class="font-mono font-bold text-rose-700 tracking-wide">000 ngày 00 giờ 00 phút 00 giây</div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button onclick="openMemoryModal()" class="px-3 py-1.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 animate-pulse">
+                <i class="fa-solid fa-plus-circle text-sm"></i>
+                <span class="hidden sm:inline">Thêm Kỷ Niệm</span>
+            </button>
+            
+            <button onclick="openMusicModal()" id="musicBtn" class="p-2.5 rounded-full bg-pink-100/80 hover:bg-rose-400 hover:text-white text-rose-600 transition-all duration-300 shadow-sm relative" title="Cài Đặt / Bật Tắt Nhạc Nền">
+                <i class="fa-solid fa-music"></i>
+                <span id="musicIndicator" class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white hidden"></span>
+            </button>
+
+            <button onclick="openThemeModal()" class="p-2.5 rounded-full bg-pink-100/80 hover:bg-rose-400 hover:text-white text-rose-600 transition-all duration-300 shadow-sm" title="Đổi Bìa & Nền Web">
+                <i class="fa-solid fa-palette"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Flipbook Container Area -->
+    <main class="flex-1 w-full flex flex-col justify-center items-center p-4 my-4 z-10">
+        
+        <!-- Book Flip Wrapper -->
+        <div class="book-container relative my-auto">
+            <!-- Hiệu ứng thanh lò xo kim loại bên gáy sách -->
+            <div class="spiral-binding" id="spiralContainer">
+                <!-- Các khoen lò xo tự động sinh bằng JS -->
+            </div>
+            
+            <div class="book" id="albumBook">
+                <!-- Pages will be dynamically created by JS -->
+            </div>
+        </div>
+
+        <!-- Navigation & Control Toolbar -->
+        <div class="mt-8 flex flex-wrap justify-center items-center gap-2.5 z-20 bg-white/85 backdrop-blur-md px-5 py-2.5 rounded-full border border-rose-200/80 shadow-xl">
+            <button onclick="prevPage()" class="px-3.5 py-1.5 rounded-full bg-pink-100 hover:bg-rose-400 hover:text-white text-rose-600 font-medium text-xs sm:text-sm transition-all duration-300 flex items-center space-x-1.5 border border-pink-200 shadow-sm">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span class="hidden sm:inline">Trang Trước</span>
+            </button>
+
+            <span id="pageIndicator" class="text-rose-600 font-mono font-bold text-xs sm:text-sm px-2">1 / 1</span>
+
+            <button onclick="nextPage()" class="px-3.5 py-1.5 rounded-full bg-pink-100 hover:bg-rose-400 hover:text-white text-rose-600 font-medium text-xs sm:text-sm transition-all duration-300 flex items-center space-x-1.5 border border-pink-200 shadow-sm">
+                <span class="hidden sm:inline">Trang Sau</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="h-4 w-px bg-pink-200 mx-1"></div>
+
+            <button onclick="openMemoryModal()" class="px-3.5 py-1.5 rounded-full bg-emerald-100 hover:bg-emerald-500 hover:text-white text-emerald-700 font-medium text-xs sm:text-sm transition-all duration-300 flex items-center space-x-1.5 border border-emerald-200 shadow-sm" title="Thêm khoảnh khắc yêu thương mới">
+                <i class="fa-solid fa-heart-circle-plus"></i>
+                <span class="font-semibold">Thêm / Sửa Kỷ Niệm</span>
+            </button>
+
+            <button onclick="toggleAutoPlay()" id="autoPlayBtn" class="px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-400 hover:text-white text-amber-700 font-medium text-xs sm:text-sm transition-all duration-300 flex items-center space-x-1 border border-amber-200 shadow-sm">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span class="hidden md:inline">Tự Động</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal Form: Thêm / Chỉnh Sửa Kỷ Niệm -->
+    <div id="memoryModal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto">
+        <div class="bg-white border border-rose-200 rounded-3xl w-full max-w-lg p-5 sm:p-6 text-gray-800 shadow-2xl relative my-6 max-h-[92vh] overflow-y-auto">
+            <button onclick="closeMemoryModal()" class="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-xl transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="flex items-center space-x-2 text-rose-600 mb-4">
+                <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+                <h3 class="font-serif text-xl sm:text-2xl font-bold" id="memoryModalTitle">Thêm Kỷ Niệm Yêu Thương Mới</h3>
+            </div>
+
+            <form id="memoryForm" onsubmit="handleSaveMemory(event)" class="space-y-4">
+                <input type="hidden" id="editPageIndex" value="-1">
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar-days text-rose-500"></i> Ngày kỷ niệm:
+                    </label>
+                    <input type="date" id="memoryDate" required class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 text-sm outline-none bg-pink-50/30">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-heading text-rose-500"></i> Tiêu đề kỷ niệm:
+                    </label>
+                    <input type="text" id="memoryTitle" placeholder="Ví dụ: Chuyến du lịch Đà Lạt, Lần đầu nắm tay..." required class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 text-sm outline-none bg-pink-50/30">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-regular fa-image text-rose-500"></i> Hình ảnh kỷ niệm:
+                    </label>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-rose-300 rounded-2xl cursor-pointer bg-pink-50/40 hover:bg-pink-100/60 transition-all relative overflow-hidden">
+                                <div id="uploadPlaceholder" class="flex flex-col items-center justify-center pt-2 pb-3">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-rose-400 mb-1"></i>
+                                    <p class="text-xs text-rose-600 font-medium">Bấm để chọn ảnh từ máy / điện thoại</p>
+                                    <p class="text-[10px] text-gray-400">PNG, JPG, GIF (Tối ưu < 5MB)</p>
+                                </div>
+                                <img id="imagePreview" class="absolute inset-0 w-full h-full object-cover hidden" alt="Preview Image">
+                                <input type="file" id="memoryFileInput" accept="image/*" class="hidden" onchange="previewSelectedImage(event)">
+                            </label>
+                        </div>
+
+                        <div class="relative">
+                            <input type="url" id="memoryImgUrl" placeholder="Hoặc dán link ảnh (https://...)" onchange="previewUrlImage(this.value)" class="w-full px-3 py-1.5 rounded-xl border border-pink-200 text-xs focus:border-rose-400 outline-none bg-pink-50/20">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-icons text-rose-500"></i> Chọn Sticker trang trí:
+                    </label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-heart" checked class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-rose-500 transition-all text-base"><i class="fa-solid fa-heart"></i></div>
+                        </label>
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-sun" class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-amber-500 transition-all text-base"><i class="fa-solid fa-sun"></i></div>
+                        </label>
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-gift" class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-purple-500 transition-all text-base"><i class="fa-solid fa-gift"></i></div>
+                        </label>
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-ring" class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-yellow-500 transition-all text-base"><i class="fa-solid fa-ring"></i></div>
+                        </label>
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-star" class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-amber-400 transition-all text-base"><i class="fa-solid fa-star"></i></div>
+                        </label>
+                        <label class="sticker-option cursor-pointer text-center">
+                            <input type="radio" name="sticker" value="fa-mug-hot" class="hidden">
+                            <div class="p-2 border border-pink-200 rounded-xl hover:bg-pink-100 text-amber-700 transition-all text-base"><i class="fa-solid fa-mug-hot"></i></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-comment-dots text-rose-500"></i> Lời nhắn yêu thương / Nhật ký:
+                    </label>
+                    <textarea id="memoryCaption" rows="3" placeholder="Viết những cảm xúc, kỷ niệm đáng nhớ của hai người tại đây..." required class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 text-sm outline-none bg-pink-50/30 font-script text-lg text-rose-900"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeMemoryModal()" class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-100 text-xs font-semibold">Hủy Bỏ</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold text-xs shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Lưu Kỷ Niệm</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cài Đặt Âm Nhạc -->
+    <div id="musicModal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-3">
+        <div class="bg-white border border-rose-200 rounded-3xl w-full max-w-md p-6 text-gray-800 shadow-2xl relative">
+            <button onclick="closeMusicModal()" class="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-xl transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-serif text-2xl text-rose-600 font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-music"></i> Cài Đặt Nhạc Nền
+            </h3>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <i class="fa-brands fa-youtube text-red-500 text-sm"></i> Link Nhạc YouTube (Dán hoặc Kéo thả vào đây):
+                    </label>
+                    <div id="ytDropZone" 
+                         ondragover="handleDragOver(event)" 
+                         ondragleave="handleDragLeave(event)" 
+                         ondrop="handleYoutubeDrop(event)"
+                         class="p-3 border-2 border-dashed border-pink-300 rounded-2xl bg-pink-50/40 text-center transition-colors">
+                        <i class="fa-brands fa-youtube text-3xl text-red-500 mb-1"></i>
+                        <p class="text-[11px] text-gray-500 mb-2">Kéo đường dẫn video từ YouTube rồi thả trực tiếp vào đây</p>
+                        <input type="text" id="ytUrlInput" placeholder="Hoặc dán link YouTube (https://www.youtube.com/watch?v=...)" class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 outline-none text-xs bg-white">
+                        <button onclick="applyYoutubeUrl()" class="mt-2 w-full py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition-all">
+                            Sử dụng nhạc YouTube này
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-gray-400 my-1">
+                    <hr class="flex-1 border-pink-100">
+                    <span class="text-[10px] font-bold uppercase">Hoặc</span>
+                    <hr class="flex-1 border-pink-100">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-audio text-rose-500"></i> Tải file nhạc từ thiết bị (MP3, WAV, AAC):
+                    </label>
+                    <label class="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-pink-300 rounded-2xl cursor-pointer bg-pink-50/40 hover:bg-pink-100/60 transition-all">
+                        <div class="flex flex-col items-center justify-center">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl text-rose-400 mb-1"></i>
+                            <span class="text-xs text-rose-600 font-semibold" id="audioFileName">Chọn file nhạc MP3...</span>
+                        </div>
+                        <input type="file" id="musicFileInput" accept="audio/*" class="hidden" onchange="handleAudioFileUpload(event)">
+                    </label>
+                </div>
+
+                <div id="musicStatus" class="p-2.5 rounded-xl bg-pink-50 border border-pink-200 text-rose-700 text-xs flex items-center justify-between">
+                    <span id="currentMusicLabel" class="truncate font-medium">Đang dùng nhạc mặc định</span>
+                    <button onclick="resetMusicToDefault()" class="text-rose-500 hover:underline text-[11px] whitespace-nowrap ml-2">Khôi phục mặc định</button>
+                </div>
+            </div>
+
+            <div class="mt-5 flex justify-between items-center">
+                <button onclick="toggleMusicState()" id="modalToggleMusicBtn" class="px-4 py-2 rounded-xl bg-rose-500 text-white font-medium text-xs shadow-md hover:bg-rose-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-play"></i> Phát / Tạm dừng
+                </button>
+                <button onclick="closeMusicModal()" class="px-5 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium text-xs">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cài Đặt Thông Tin Cặp Đôi -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white border border-pink-200 rounded-3xl w-full max-w-md p-6 text-gray-800 shadow-2xl relative">
+            <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-serif text-2xl text-rose-600 font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-heart-pulse"></i> Cài Đặt Tình Yêu
+            </h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Tên Anh (Partner 1):</label>
+                    <input type="text" id="partner1Input" class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Tên Em (Partner 2):</label>
+                    <input type="text" id="partner2Input" class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Ngày Bắt Đầu Yêu:</label>
+                    <input type="date" id="startDateInput" class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Tên Album Tình Yêu:</label>
+                    <input type="text" id="albumTitleInput" class="w-full px-3 py-2 rounded-xl border border-pink-200 focus:border-rose-400 outline-none">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-between items-center">
+                <button onclick="resetAllData()" class="text-xs text-red-400 hover:text-red-600 underline">Khôi phục mặc định</button>
+                <button onclick="saveSettings()" class="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-medium text-xs shadow-md">Lưu Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Zoom Modal -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 hidden backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 opacity-0" onclick="closeLightbox()">
+        <div class="relative max-w-4xl max-h-[90vh] p-4 bg-white/95 border border-pink-200 rounded-3xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute top-4 right-4 z-10 text-gray-600 hover:text-rose-600 bg-pink-100/80 w-10 h-10 rounded-full flex items-center justify-center text-xl transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightboxImg" src="" alt="Zoomed Photo" class="max-w-full max-h-[75vh] rounded-2xl object-contain mx-auto shadow-lg">
+            <p id="lightboxCaption" class="text-center text-rose-600 font-script text-2xl mt-4 px-4 font-semibold"></p>
+        </div>
+    </div>
+
+    <!-- Theme Customization Control Panel Modal -->
+    <div id="themeModal" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white border border-pink-200 rounded-3xl w-full max-w-lg p-6 text-gray-800 shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeThemeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-rose-500 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h3 class="font-serif text-2xl text-rose-600 font-bold mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-palette"></i> Cài Đặt Giao Diện Album & Web
+            </h3>
+
+            <div class="mb-6">
+                <h4 class="text-rose-500 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-book-open"></i> Màu / Chất Liệu Bìa Album
+                </h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3">
+                    <button onclick="applyCoverPreset('pink')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #fbcfe8, #f472b6);"></span>
+                        <span class="font-medium text-gray-700">Hồng Pastel</span>
+                    </button>
+                    <button onclick="applyCoverPreset('burgundy')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #831843, #be185d);"></span>
+                        <span class="font-medium text-gray-700">Đỏ Rượu Vang</span>
+                    </button>
+                    <button onclick="applyCoverPreset('navy')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #1e1b4b, #312e81);"></span>
+                        <span class="font-medium text-gray-700">Xanh Navy</span>
+                    </button>
+                    <button onclick="applyCoverPreset('brown')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #78350f, #92400e);"></span>
+                        <span class="font-medium text-gray-700">Da Bò Cổ Điển</span>
+                    </button>
+                    <button onclick="applyCoverPreset('lavender')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #c084fc, #a855f7);"></span>
+                        <span class="font-medium text-gray-700">Tím Mộng Mơ</span>
+                    </button>
+                </div>
+            </div>
+
+            <hr class="border-pink-100 my-4">
+
+            <div>
+                <h4 class="text-rose-500 font-bold mb-3 flex items-center gap-2 text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-image"></i> Màu / Hình Nền Website
+                </h4>
+                <div class="grid grid-cols-2 gap-2.5 mb-3">
+                    <button onclick="applyBgPreset('softpink')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #fff5f7, #fbcfe8);"></span>
+                        <span class="font-medium text-gray-700">Romantic Soft Pink</span>
+                    </button>
+                    <button onclick="applyBgPreset('romantic')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #ffe4e6, #fbcfe8);"></span>
+                        <span class="font-medium text-gray-700">Cherry Blossom</span>
+                    </button>
+                    <button onclick="applyBgPreset('starry')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #020617, #1e1b4b);"></span>
+                        <span class="font-medium text-gray-700">Đêm Sao Huyền Diệu</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeThemeModal()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-400 to-pink-500 text-white font-medium hover:opacity-90 shadow-md text-sm">Xong</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio / Youtube Player Iframe (Mặc định cấu hình sẵn nhạc YouTube: qhxh6Itwii4) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-piano-589.mp3" type="audio/mpeg">
+    </audio>
+    <div id="youtubePlayerContainer" class="hidden pointer-events-none w-0 h-0 opacity-0 overflow-hidden absolute">
+        <iframe id="ytIframe" width="200" height="200" src="https://www.youtube.com/embed/qhxh6Itwii4?enablejsapi=1&autoplay=1&loop=1&playlist=qhxh6Itwii4" frameborder="0" allow="autoplay"></iframe>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full z-20 py-3 text-center text-xs text-rose-500/80 border-t border-rose-200/50 bg-white/40 backdrop-blur-sm">
+        <p>Thực hiện với tất cả tình yêu ❤️ - Album Kỷ Niệm Tình Yêu Cặp Đôi</p>
+    </footer>
+
+    <!-- Audio FX & Scripts -->
+    <script>
+        const defaultPages = [
+            {
+                type: "cover",
+                title: "Our Eternal Love Story",
+                subtitle: "Hành trình yêu thương rực rỡ",
+                partner1Img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+                partner2Img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                type: "memory",
+                rawDate: "2021-04-18",
+                date: "18 Tháng 04, 2021",
+                title: "Cuộc gặp gỡ đầu tiên",
+                caption: "Ánh mắt đầu tiên chạm nhau qua đôi dòng tin nhắn chào hỏi lần đầu và lời nhắn của em làm tan chảy mọi khoảnh khắc...",
+                img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
+                sticker: "fa-heart"
+            },
+            {
+                type: "memory",
+                rawDate: "2023-10-20",
+                date: "20 Tháng 10, 2023",
+                title: "Chuyến Đi Biển Đầu Tiên",
+                caption: "Cùng nhau đón bình minh trên bờ biển vắng. Tiếng sóng vỗ hòa cùng nhịp đập trái tim hai ta.",
+                img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                sticker: "fa-sun"
+            },
+            {
+                type: "memory",
+                rawDate: "2023-12-25",
+                date: "25 Tháng 12, 2023",
+                title: "Giáng Sinh Ấm Áp",
+                caption: "Giữa cái lạnh mùa đông, cái nắm tay siết chặt mang theo sự ấm áp kỳ diệu nhất trần đời.",
+                img: "https://images.unsplash.com/photo-1543589077-47d51996470a?auto=format&fit=crop&w=800&q=80",
+                sticker: "fa-gift"
+            },
+            {
+                type: "backcover",
+                title: "Forever & Always",
+                message: "Tình yêu không phải là đếm số ngày bên nhau, mà là làm cho mỗi ngày bên nhau trở nên có ý nghĩa."
+            }
+        ];
+
+        let state = {
+            partner1: "Thịnh",
+            partner2: "Ánh",
+            startDate: "2021-04-18",
+            albumTitle: "Our Eternal Love Story",
+            currentPage: 0,
+            isPlayingMusic: false,
+            autoPlayInterval: null,
+            uploadedTempImg: null,
+            musicSource: "youtube", // Thiết lập mặc định nguồn phát là YouTube
+            youtubeId: "qhxh6Itwii4",
+            localAudioUrl: null,
+            pages: []
+        };
+
+        function loadSavedState() {
+            try {
+                const savedData = localStorage.getItem('loveAlbumData');
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    state.partner1 = parsed.partner1 || "Thịnh";
+                    state.partner2 = parsed.partner2 || "Ánh";
+                    state.startDate = parsed.startDate || "2021-04-18";
+                    state.albumTitle = parsed.albumTitle || "Our Eternal Love Story";
+                    state.musicSource = parsed.musicSource || "youtube";
+                    state.youtubeId = parsed.youtubeId || "qhxh6Itwii4";
+                    state.localAudioUrl = parsed.localAudioUrl || null;
+                    state.pages = parsed.pages && parsed.pages.length > 0 ? parsed.pages : [...defaultPages];
+                } else {
+                    state.pages = [...defaultPages];
+                }
+            } catch (e) {
+                state.pages = [...defaultPages];
+            }
+            updateHeaderAndTitles();
+            applySavedMusicSource();
+        }
+
+        function saveStateToLocalStorage() {
+            try {
+                const dataToSave = {
+                    partner1: state.partner1,
+                    partner2: state.partner2,
+                    startDate: state.startDate,
+                    albumTitle: state.albumTitle,
+                    musicSource: state.musicSource,
+                    youtubeId: state.youtubeId,
+                    localAudioUrl: state.localAudioUrl,
+                    pages: state.pages
+                };
+                localStorage.setItem('loveAlbumData', JSON.stringify(dataToSave));
+            } catch (e) {}
+        }
+
+        function resetAllData() {
+            if (confirm("Bạn có chắc chắn muốn khôi phục album về dữ liệu ban đầu không?")) {
+                localStorage.removeItem('loveAlbumData');
+                location.reload();
+            }
+        }
+
+        function updateHeaderAndTitles() {
+            document.getElementById('headerNames').querySelector('span').innerText = `${state.partner1} & ${state.partner2}`;
+            if (state.pages.length > 0 && state.pages[0].type === 'cover') {
+                state.pages[0].title = state.albumTitle;
+            }
+        }
+
+        function formatVNStyleDate(dateString) {
+            if (!dateString) return "Ngày Kỷ Niệm";
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]} Tháng ${parts[1]}, ${parts[0]}`;
+            }
+            return dateString;
+        }
+
+        function updatePageIndices() {
+            const book = document.getElementById('albumBook');
+            const pages = book.querySelectorAll('.page');
+            const total = pages.length;
+
+            pages.forEach((page, index) => {
+                if (index < state.currentPage) {
+                    page.style.zIndex = index + 1;
+                } else {
+                    page.style.zIndex = total - index;
+                }
+            });
+        }
+
+        function playFlipSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = ctx.sampleRate * 0.15;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.15);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                noise.start();
+            } catch (e) {}
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const heartColors = ['#f472b6', '#fb7185', '#fda4af', '#f43f5e', '#ec4899'];
+
+            class HeartParticle {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = height + 20;
+                    this.size = Math.random() * 12 + 6;
+                    this.speedY = Math.random() * 1.5 + 0.5;
+                    this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+                    this.color = heartColors[Math.floor(Math.random() * heartColors.length)];
+                    this.opacity = Math.random() * 0.6 + 0.3;
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.rotSpeed = (Math.random() - 0.5) * 0.02;
+                }
+                update() {
+                    this.y -= this.speedY;
+                    this.x += Math.sin(this.y * 0.01) * 0.5;
+                    this.rotation += this.rotSpeed;
+                    if (this.y < -30) this.reset();
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    const topCurveHeight = this.size * 0.3;
+                    ctx.moveTo(0, topCurveHeight);
+                    ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                    ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < 30; i++) particles.push(new HeartParticle());
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function updateLoveTimer() {
+            const start = new Date(state.startDate + "T00:00:00");
+            const now = new Date();
+            const diff = now - start;
+
+            if (diff < 0) {
+                document.getElementById('loveTimer').innerText = "Vừa bắt đầu chặng đường!";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('loveTimer').innerText = 
+                `${days} ngày ${hours.toString().padStart(2, '0')} giờ ${minutes.toString().padStart(2, '0')} phút ${seconds.toString().padStart(2, '0')} giây`;
+        }
+
+        /* Tạo tự động các vòng lò xo kim loại dọc gáy sách */
+        function renderSpiralRings() {
+            const spiralContainer = document.getElementById('spiralContainer');
+            if (!spiralContainer) return;
+            spiralContainer.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const ring = document.createElement('div');
+                ring.className = 'spiral-ring';
+                spiralContainer.appendChild(ring);
+            }
+        }
+
+        function renderBook() {
+            const book = document.getElementById('albumBook');
+            book.innerHTML = '';
+
+            state.pages.forEach((pageData, index) => {
+                const pageEl = document.createElement('div');
+                pageEl.className = `page ${index < state.currentPage ? 'flipped' : ''}`;
+
+                let frontHtml = '';
+                let backHtml = '';
+
+                if (pageData.type === 'cover') {
+                    const p1Img = pageData.partner1Img || pageData.coverImg || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+                    const p2Img = pageData.partner2Img || pageData.coverImg || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80";
+
+                    frontHtml = `
+                        <div class="page-front leather-cover flex flex-col justify-between items-center p-5 sm:p-8 text-center text-rose-950 relative">
+                            <div class="spine-shadow"></div>
+                            <div class="gold-border w-full h-full p-4 sm:p-6 flex flex-col justify-between items-center bg-white/40 backdrop-blur-xs">
+                                <div class="mt-1">
+                                    <span class="text-rose-600 text-[11px] sm:text-xs tracking-widest uppercase font-semibold font-sans">Photobook Kỷ Niệm</span>
+                                    <h2 class="font-vibes text-3xl sm:text-5xl text-rose-700 mt-1 sm:mt-2 leading-snug font-bold drop-shadow-sm" contenteditable="true" onblur="updatePageContent(${index}, 'title', this.innerText)">${pageData.title}</h2>
+                                    <p class="font-script text-rose-600 text-lg sm:text-xl mt-0.5 font-semibold" contenteditable="true" onblur="updatePageContent(${index}, 'subtitle', this.innerText)">${pageData.subtitle}</p>
+                                </div>
+
+                                <div class="relative my-3 flex items-center justify-center">
+                                    <div class="relative w-44 h-28 sm:w-56 sm:h-36 flex items-center justify-center">
+                                        <div class="group absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10" title="Bấm để đổi ảnh ${state.partner1}">
+                                            <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-xl cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-110 hover:z-30 relative ring-2 ring-pink-300/60" onclick="triggerPartnerFileUpload(${index}, 1)">
+                                                <img id="img-partner1-${index}" src="${p1Img}" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-rose-600/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity text-center p-1">
+                                                    <i class="fa-solid fa-camera text-base sm:text-xl"></i>
+                                                    <span class="text-[9px] font-bold mt-0.5 leading-tight">${state.partner1}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="absolute z-20 w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center text-xs shadow-lg animate-pulse border-2 border-white">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </div>
+
+                                        <div class="group absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-0" title="Bấm để đổi ảnh ${state.partner2}">
+                                            <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-xl cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-110 hover:z-30 relative ring-2 ring-pink-300/60" onclick="triggerPartnerFileUpload(${index}, 2)">
+                                                <img id="img-partner2-${index}" src="${p2Img}" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-rose-600/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity text-center p-1">
+                                                    <i class="fa-solid fa-camera text-base sm:text-xl"></i>
+                                                    <span class="text-[9px] font-bold mt-0.5 leading-tight">${state.partner2}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input type="file" id="file-partner1-${index}" class="hidden" accept="image/*" onchange="handlePartnerImageUpload(event, ${index}, 1)">
+                                    <input type="file" id="file-partner2-${index}" class="hidden" accept="image/*" onchange="handlePartnerImageUpload(event, ${index}, 2)">
+                                </div>
+
+                                <div>
+                                    <h3 class="font-script text-xl sm:text-2xl text-rose-800 font-bold">${state.partner1} & ${state.partner2}</h3>
+                                    <p class="text-[11px] text-rose-600/90 font-mono mt-0.5 font-medium">Bên nhau từ ${state.startDate}</p>
+                                    <div class="mt-2 inline-block px-4 py-1.5 rounded-full bg-white/80 border border-rose-300 text-rose-600 text-xs font-semibold cursor-pointer hover:bg-rose-500 hover:text-white transition-colors shadow-sm" onclick="nextPage()">
+                                        Lật xem Album <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (pageData.type === 'backcover') {
+                    frontHtml = `
+                        <div class="page-front leather-cover flex flex-col justify-center items-center p-6 sm:p-8 text-center text-rose-950 relative">
+                            <div class="spine-shadow"></div>
+                            <div class="gold-border w-full h-full p-6 flex flex-col justify-center items-center bg-white/40">
+                                <i class="fa-solid fa-heart text-rose-500 text-4xl mb-4 animate-bounce"></i>
+                                <h3 class="font-vibes text-3xl sm:text-4xl text-rose-700 font-bold mb-3">${pageData.title}</h3>
+                                <p class="font-script text-xl sm:text-2xl text-rose-800 leading-relaxed px-4 font-semibold" contenteditable="true" onblur="updatePageContent(${index}, 'message', this.innerText)">${pageData.message}</p>
+                                <button onclick="openMemoryModal()" class="mt-6 px-4 py-2 rounded-full bg-rose-500 text-white font-medium text-xs hover:bg-rose-600 transition-colors shadow-md">
+                                    <i class="fa-solid fa-plus-circle mr-1"></i> Thêm Trang Kỷ Niệm
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    frontHtml = `
+                        <div class="page-front paper-texture p-4 sm:p-6 flex flex-col justify-between relative border-l-4 border-pink-300">
+                            <div class="spine-shadow"></div>
+                            
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="washi-tape px-3 py-1 font-mono text-xs text-rose-700 font-bold transform -rotate-1 rounded-sm shadow-xs">
+                                    ${pageData.date}
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="event.stopPropagation(); openMemoryModal(${index})" class="text-xs text-rose-400 hover:text-rose-600 transition-colors p-1 bg-pink-100/60 rounded-full w-6 h-6 flex items-center justify-center" title="Sửa kỷ niệm này">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); deletePage(${index})" class="text-xs text-rose-300 hover:text-red-500 transition-colors p-1 bg-pink-100/60 rounded-full w-6 h-6 flex items-center justify-center" title="Xóa trang này">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                    <div class="text-rose-500 text-base ml-1">
+                                        <i class="fa-solid ${pageData.sticker || 'fa-heart'}"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative my-auto group">
+                                <div class="bg-white p-2.5 sm:p-3 rounded-2xl shadow-md transform rotate-1 transition-transform group-hover:rotate-0 duration-300 relative border border-pink-100">
+                                    <div class="washi-tape w-20 h-5 absolute -top-2.5 left-1/2 transform -translate-x-1/2 rotate-1 z-10 opacity-80 rounded-sm"></div>
+                                    
+                                    <div class="w-full h-44 sm:h-56 overflow-hidden rounded-xl relative bg-pink-50/50 cursor-pointer" onclick="openLightbox('${pageData.img}', '${pageData.title}')">
+                                        <img id="img-page-${index}" src="${pageData.img}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-rose-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2 text-white">
+                                            <button onclick="event.stopPropagation(); openMemoryModal(${index})" class="p-2 bg-white/90 text-rose-600 rounded-full hover:bg-rose-500 hover:text-white transition-colors shadow-md text-xs font-semibold flex items-center gap-1">
+                                                <i class="fa-solid fa-pen"></i> Sửa
+                                            </button>
+                                            <button onclick="event.stopPropagation(); openLightbox('${pageData.img}', '${pageData.title}')" class="p-2 bg-white/90 text-rose-600 rounded-full hover:bg-rose-500 hover:text-white transition-colors shadow-md text-xs font-semibold flex items-center gap-1">
+                                                <i class="fa-solid fa-expand"></i> Phóng to
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 bg-pink-100/50 p-2.5 rounded-xl border border-pink-200/60 shadow-inner">
+                                <h4 class="font-serif font-bold text-gray-800 text-sm sm:text-base leading-snug">${pageData.title}</h4>
+                                <p class="font-script text-base sm:text-lg text-rose-800 mt-0.5 leading-snug font-medium line-clamp-3">${pageData.caption}</p>
+                            </div>
+
+                            <div class="text-right text-[10px] text-rose-300 font-mono mt-1">Trang ${index}</div>
+                        </div>
+                    `;
+                }
+
+                backHtml = `
+                    <div class="page-back paper-texture p-6 flex flex-col justify-between items-center relative">
+                        <div class="spine-shadow"></div>
+                        <div class="w-full h-full border border-pink-200 rounded-2xl p-4 flex flex-col justify-center items-center text-center">
+                            <i class="fa-solid fa-heart text-pink-300 text-3xl mb-2"></i>
+                            <p class="font-script text-rose-400 text-xl font-medium">Yêu thương đong đầy từng khoảnh khắc</p>
+                        </div>
+                    </div>
+                `;
+
+                pageEl.innerHTML = frontHtml + backHtml;
+                book.appendChild(pageEl);
+            });
+
+            updatePageIndices();
+            updatePageIndicator();
+        }
+
+        function openMemoryModal(editIndex = -1) {
+            state.uploadedTempImg = null;
+            document.getElementById('memoryForm').reset();
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('imagePreview').src = '';
+
+            if (editIndex !== -1 && state.pages[editIndex]) {
+                const item = state.pages[editIndex];
+                document.getElementById('editPageIndex').value = editIndex;
+                document.getElementById('memoryModalTitle').innerText = "Chỉnh Sửa Kỷ Niệm";
+                document.getElementById('memoryDate').value = item.rawDate || new Date().toISOString().split('T')[0];
+                document.getElementById('memoryTitle').value = item.title || "";
+                document.getElementById('memoryCaption').value = item.caption || "";
+                
+                if (item.img) {
+                    state.uploadedTempImg = item.img;
+                    document.getElementById('imagePreview').src = item.img;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                }
+
+                const stickers = document.getElementsByName('sticker');
+                for (let r of stickers) {
+                    if (r.value === (item.sticker || 'fa-heart')) r.checked = true;
+                }
+            } else {
+                document.getElementById('editPageIndex').value = "-1";
+                document.getElementById('memoryModalTitle').innerText = "Thêm Kỷ Niệm Mới";
+                document.getElementById('memoryDate').value = new Date().toISOString().split('T')[0];
+            }
+
+            document.getElementById('memoryModal').classList.remove('hidden');
+        }
+
+        function closeMemoryModal() {
+            document.getElementById('memoryModal').classList.add('hidden');
+        }
+
+        function previewSelectedImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.uploadedTempImg = e.target.result;
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewUrlImage(url) {
+            if (url.trim()) {
+                state.uploadedTempImg = url.trim();
+                document.getElementById('imagePreview').src = url.trim();
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+            }
+        }
+
+        function handleSaveMemory(event) {
+            event.preventDefault();
+
+            const editIndex = parseInt(document.getElementById('editPageIndex').value);
+            const rawDate = document.getElementById('memoryDate').value;
+            const title = document.getElementById('memoryTitle').value;
+            const caption = document.getElementById('memoryCaption').value;
+            const formattedDate = formatVNStyleDate(rawDate);
+
+            let sticker = 'fa-heart';
+            const stickers = document.getElementsByName('sticker');
+            for (let r of stickers) {
+                if (r.checked) sticker = r.value;
+            }
+
+            const img = state.uploadedTempImg || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80";
+
+            if (editIndex >= 0 && state.pages[editIndex]) {
+                state.pages[editIndex].rawDate = rawDate;
+                state.pages[editIndex].date = formattedDate;
+                state.pages[editIndex].title = title;
+                state.pages[editIndex].caption = caption;
+                state.pages[editIndex].sticker = sticker;
+                state.pages[editIndex].img = img;
+            } else {
+                const newMemory = {
+                    type: "memory",
+                    rawDate: rawDate,
+                    date: formattedDate,
+                    title: title,
+                    caption: caption,
+                    img: img,
+                    sticker: sticker
+                };
+                const insertPos = state.pages.length - 1;
+                state.pages.splice(insertPos, 0, newMemory);
+            }
+
+            saveStateToLocalStorage();
+            renderBook();
+            closeMemoryModal();
+
+            const targetPage = editIndex >= 0 ? editIndex : state.pages.length - 2;
+            goToPage(targetPage);
+        }
+
+        function goToPage(targetIndex) {
+            if (targetIndex >= 0 && targetIndex < state.pages.length) {
+                state.currentPage = targetIndex;
+                const book = document.getElementById('albumBook');
+                const pages = book.querySelectorAll('.page');
+                pages.forEach((p, idx) => {
+                    if (idx < targetIndex) p.classList.add('flipped');
+                    else p.classList.remove('flipped');
+                });
+                updatePageIndices();
+                updatePageIndicator();
+            }
+        }
+
+        function nextPage() {
+            if (state.currentPage < state.pages.length - 1) {
+                const book = document.getElementById('albumBook');
+                const pages = book.querySelectorAll('.page');
+                pages[state.currentPage].classList.add('flipped');
+                state.currentPage++;
+                updatePageIndices();
+                playFlipSound();
+                updatePageIndicator();
+            }
+        }
+
+        function prevPage() {
+            if (state.currentPage > 0) {
+                state.currentPage--;
+                const book = document.getElementById('albumBook');
+                const pages = book.querySelectorAll('.page');
+                pages[state.currentPage].classList.remove('flipped');
+                updatePageIndices();
+                playFlipSound();
+                updatePageIndicator();
+            }
+        }
+
+        function deletePage(index) {
+            if (confirm("Bạn có chắc chắn muốn xóa kỷ niệm này không?")) {
+                state.pages.splice(index, 1);
+                if (state.currentPage >= state.pages.length) {
+                    state.currentPage = state.pages.length - 1;
+                }
+                saveStateToLocalStorage();
+                renderBook();
+            }
+        }
+
+        function updatePageIndicator() {
+            document.getElementById('pageIndicator').innerText = `${state.currentPage + 1} / ${state.pages.length}`;
+        }
+
+        function toggleAutoPlay() {
+            const btn = document.getElementById('autoPlayBtn');
+            if (state.autoPlayInterval) {
+                clearInterval(state.autoPlayInterval);
+                state.autoPlayInterval = null;
+                btn.classList.remove('bg-rose-500', 'text-white');
+                btn.classList.add('bg-amber-100', 'text-amber-700');
+                btn.innerHTML = `<i class="fa-solid fa-play text-xs"></i><span class="hidden md:inline">Tự Động</span>`;
+            } else {
+                state.autoPlayInterval = setInterval(() => {
+                    if (state.currentPage < state.pages.length - 1) {
+                        nextPage();
+                    } else {
+                        goToPage(0);
+                    }
+                }, 4000);
+                btn.classList.remove('bg-amber-100', 'text-amber-700');
+                btn.classList.add('bg-rose-500', 'text-white');
+                btn.innerHTML = `<i class="fa-solid fa-pause text-xs"></i><span class="hidden md:inline">Tạm Dừng</span>`;
+            }
+        }
+
+        function triggerPartnerFileUpload(pageIndex, partnerNumber) {
+            document.getElementById(`file-partner${partnerNumber}-${pageIndex}`).click();
+        }
+
+        function handlePartnerImageUpload(event, pageIndex, partnerNumber) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (partnerNumber === 1) {
+                        state.pages[pageIndex].partner1Img = e.target.result;
+                    } else {
+                        state.pages[pageIndex].partner2Img = e.target.result;
+                    }
+                    saveStateToLocalStorage();
+                    renderBook();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updatePageContent(index, field, value) {
+            if (state.pages[index]) {
+                state.pages[index][field] = value;
+                saveStateToLocalStorage();
+            }
+        }
+
+        function openLightbox(imgSrc, captionText) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImg');
+            const caption = document.getElementById('lightboxCaption');
+
+            img.src = imgSrc;
+            caption.innerText = captionText || "";
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightboxModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function extractYoutubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function openMusicModal() {
+            document.getElementById('musicModal').classList.remove('hidden');
+            updateMusicModalUI();
+        }
+
+        function closeMusicModal() {
+            document.getElementById('musicModal').classList.add('hidden');
+        }
+
+        function updateMusicModalUI() {
+            const label = document.getElementById('currentMusicLabel');
+            if (state.musicSource === 'youtube') {
+                label.innerHTML = `<span class="text-red-500 font-bold"><i class="fa-brands fa-youtube"></i> Nhạc YouTube:</span> ID ${state.youtubeId}`;
+            } else if (state.musicSource === 'local') {
+                label.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-file-audio"></i> Nhạc Tải Lên</span>`;
+            } else {
+                label.innerText = "Đang dùng nhạc mặc định (Piano Romantic)";
+            }
+        }
+
+        function applySavedMusicSource() {
+            if (state.musicSource === 'youtube' && state.youtubeId) {
+                setYoutubeMusic(state.youtubeId);
+            } else if (state.musicSource === 'local' && state.localAudioUrl) {
+                setLocalMusicUrl(state.localAudioUrl);
+            } else {
+                state.musicSource = 'default';
+            }
+        }
+
+        function setYoutubeMusic(ytId) {
+            state.musicSource = 'youtube';
+            state.youtubeId = ytId;
+            const bgAudio = document.getElementById('bgMusic');
+            bgAudio.pause();
+
+            const container = document.getElementById('youtubePlayerContainer');
+            container.innerHTML = `<iframe id="ytIframe" width="200" height="200" src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1&loop=1&playlist=${ytId}" frameborder="0" allow="autoplay"></iframe>`;
+            
+            saveStateToLocalStorage();
+            updateMusicModalUI();
+            if (state.isPlayingMusic) {
+                playMusic();
+            }
+        }
+
+        function setLocalMusicUrl(dataUrl) {
+            state.musicSource = 'local';
+            state.localAudioUrl = dataUrl;
+            document.getElementById('youtubePlayerContainer').innerHTML = '';
+
+            const bgAudio = document.getElementById('bgMusic');
+            bgAudio.src = dataUrl;
+            
+            saveStateToLocalStorage();
+            updateMusicModalUI();
+            if (state.isPlayingMusic) {
+                playMusic();
+            }
+        }
+
+        function resetMusicToDefault() {
+            state.musicSource = 'default';
+            state.youtubeId = '';
+            state.localAudioUrl = null;
+            document.getElementById('youtubePlayerContainer').innerHTML = '';
+            
+            const bgAudio = document.getElementById('bgMusic');
+            bgAudio.src = "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-piano-589.mp3";
+
+            saveStateToLocalStorage();
+            updateMusicModalUI();
+            if (state.isPlayingMusic) {
+                playMusic();
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('ytDropZone').classList.add('border-red-500', 'bg-red-50');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('ytDropZone').classList.remove('border-red-500', 'bg-red-50');
+        }
+
+        function handleYoutubeDrop(e) {
+            e.preventDefault();
+            document.getElementById('ytDropZone').classList.remove('border-red-500', 'bg-red-50');
+            
+            let text = e.dataTransfer.getData('text/html') || e.dataTransfer.getData('text/plain');
+            let ytId = extractYoutubeId(text);
+            
+            if (!ytId) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const link = doc.querySelector('a');
+                if (link && link.href) {
+                    ytId = extractYoutubeId(link.href);
+                }
+            }
+
+            if (ytId) {
+                document.getElementById('ytUrlInput').value = `https://www.youtube.com/watch?v=${ytId}`;
+                setYoutubeMusic(ytId);
+                playMusic();
+            } else {
+                alert("Không tìm thấy link YouTube hợp lệ. Vui lòng kéo hoặc dán lại link dạng https://www.youtube.com/watch?v=...");
+            }
+        }
+
+        function applyYoutubeUrl() {
+            const url = document.getElementById('ytUrlInput').value.trim();
+            const ytId = extractYoutubeId(url);
+            if (ytId) {
+                setYoutubeMusic(ytId);
+                playMusic();
+            } else {
+                alert("Link YouTube không hợp lệ! Vui lòng kiểm tra lại.");
+            }
+        }
+
+        function handleAudioFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('audioFileName').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    setLocalMusicUrl(evt.target.result);
+                    playMusic();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function playMusic() {
+            state.isPlayingMusic = true;
+            const btn = document.getElementById('musicBtn');
+            const indicator = document.getElementById('musicIndicator');
+            
+            btn.classList.remove('bg-pink-100', 'text-rose-700');
+            btn.classList.add('bg-rose-500', 'text-white');
+            if (indicator) indicator.classList.remove('hidden');
+
+            if (state.musicSource === 'youtube') {
+                const iframe = document.getElementById('ytIframe');
+                if (iframe) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                }
+            } else {
+                const bgAudio = document.getElementById('bgMusic');
+                bgAudio.play().catch(e => console.log("Audio play error:", e));
+            }
+        }
+
+        function pauseMusic() {
+            state.isPlayingMusic = false;
+            const btn = document.getElementById('musicBtn');
+            const indicator = document.getElementById('musicIndicator');
+
+            btn.classList.remove('bg-rose-500', 'text-white');
+            btn.classList.add('bg-pink-100', 'text-rose-700');
+            if (indicator) indicator.classList.add('hidden');
+
+            if (state.musicSource === 'youtube') {
+                const iframe = document.getElementById('ytIframe');
+                if (iframe) {
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                }
+            } else {
+                const bgAudio = document.getElementById('bgMusic');
+                bgAudio.pause();
+            }
+        }
+
+        function toggleMusicState() {
+            if (state.isPlayingMusic) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        function toggleMusic() {
+            toggleMusicState();
+        }
+
+        function openSettingsModal() {
+            document.getElementById('partner1Input').value = state.partner1;
+            document.getElementById('partner2Input').value = state.partner2;
+            document.getElementById('startDateInput').value = state.startDate;
+            document.getElementById('albumTitleInput').value = state.albumTitle;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            state.partner1 = document.getElementById('partner1Input').value || "Thịnh";
+            state.partner2 = document.getElementById('partner2Input').value || "Ánh";
+            state.startDate = document.getElementById('startDateInput').value || "2021-04-18";
+            state.albumTitle = document.getElementById('albumTitleInput').value || "Our Eternal Love Story";
+
+            updateHeaderAndTitles();
+            saveStateToLocalStorage();
+            closeSettingsModal();
+            renderBook();
+            updateLoveTimer();
+        }
+
+        const coverPresets = {
+            pink: { bg: 'linear-gradient(135deg, #fbcfe8 0%, #f472b6 50%, #ec4899 100%)', border: '#f472b6' },
+            burgundy: { bg: 'linear-gradient(135deg, #4a0e17 0%, #2b060d 60%, #1f0308 100%)', border: '#360910' },
+            navy: { bg: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #020617 100%)', border: '#1e293b' },
+            brown: { bg: 'linear-gradient(135deg, #451a03 0%, #78350f 60%, #292524 100%)', border: '#291e0a' },
+            lavender: { bg: 'linear-gradient(135deg, #f3e8ff 0%, #c084fc 60%, #9333ea 100%)', border: '#c084fc' }
+        };
+
+        const bgPresets = {
+            softpink: 'linear-gradient(135deg, #fff5f7 0%, #ffe4e6 40%, #fce7f3 70%, #fbcfe8 100%)',
+            romantic: 'linear-gradient(135deg, #ffe4e6 0%, #fbcfe8 50%, #fecdd3 100%)',
+            starry: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%)'
+        };
+
+        function openThemeModal() {
+            document.getElementById('themeModal').classList.remove('hidden');
+        }
+
+        function closeThemeModal() {
+            document.getElementById('themeModal').classList.add('hidden');
+        }
+
+        function applyCoverPreset(presetKey) {
+            const preset = coverPresets[presetKey];
+            if (preset) {
+                document.documentElement.style.setProperty('--cover-bg', preset.bg);
+                document.documentElement.style.setProperty('--cover-border', preset.border);
+            }
+        }
+
+        function applyBgPreset(presetKey) {
+            const bg = bgPresets[presetKey];
+            if (bg) {
+                document.documentElement.style.setProperty('--body-bg', bg);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft') prevPage();
+        });
+
+        window.onload = function() {
+            loadSavedState();
+            initParticles();
+            renderSpiralRings();
+            renderBook();
+            updateLoveTimer();
+            setInterval(updateLoveTimer, 1000);
+
+            document.body.addEventListener('click', function initAudioOnInteraction() {
+                if (!state.isPlayingMusic) {
+                    playMusic();
+                }
+                document.body.removeEventListener('click', initAudioOnInteraction);
+            }, { once: true });
+        };
+    </script>
+</body>
+</html>
