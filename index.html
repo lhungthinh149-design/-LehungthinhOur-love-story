@@ -266,6 +266,8 @@
             transform: scale(1.1);
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col justify-between items-center relative overflow-x-hidden">
 
@@ -653,11 +655,26 @@
 
     <!-- Audio FX & Scripts -->
     <script>
+        const firebaseConfig = {
+        apiKey: "AIzaSyC4ZT6mrw8Ju68lTHMkT0azP3Cn0GfLFRk",
+        authDomain: "our-love-story-6ca45.firebaseapp.com",
+        databaseURL: "https://our-love-story-6ca45-default-rtdb.firebaseio.com",
+        projectId: "our-love-story-6ca45",
+        storageBucket: "our-love-story-6ca45.firebasestorage.app",
+        messagingSenderId: "140329665836",
+        appId: "1:140329665836:web:816af088b94a0f9d2bd889"
+    };
+
+    // Khởi tạo Firebase và Realtime Database
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const loveRef = db.ref('loveAlbumData');
+        
         const defaultPages = [
             {
                 type: "cover",
                 title: "Our Eternal Love Story",
-                subtitle: "Hành trình yêu thương rực rỡ",
+                subtitle: "Hành trình yêu thương rực rỡ🐷🐹",
                 partner1Img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
                 partner2Img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
             },
