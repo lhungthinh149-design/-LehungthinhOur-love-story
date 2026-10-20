@@ -628,7 +628,7 @@
                         <span class="font-medium text-gray-700">Cherry Blossom</span>
                     </button>
                     <button onclick="applyBgPreset('starry')" class="p-2.5 rounded-xl border border-pink-200 bg-pink-50/50 hover:border-rose-400 flex items-center gap-2 text-xs text-left transition-all">
-                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #020617, #1e1b4b);"></span>
+                        <span class="w-5 h-5 rounded-full inline-block border border-white shadow-sm" style="background: linear-gradient(135deg, #020617, #0f172a);"></span>
                         <span class="font-medium text-gray-700">Đêm Sao Huyền Diệu</span>
                     </button>
                 </div>
@@ -656,19 +656,19 @@
     <!-- Audio FX & Scripts -->
     <script>
         const firebaseConfig = {
-        apiKey: "AIzaSyC4ZT6mrw8Ju68lTHMkT0azP3Cn0GfLFRk",
-        authDomain: "our-love-story-6ca45.firebaseapp.com",
-        databaseURL: "https://our-love-story-6ca45-default-rtdb.firebaseio.com",
-        projectId: "our-love-story-6ca45",
-        storageBucket: "our-love-story-6ca45.firebasestorage.app",
-        messagingSenderId: "140329665836",
-        appId: "1:140329665836:web:816af088b94a0f9d2bd889"
-    };
+            apiKey: "AIzaSyC4ZT6mrw8Ju68lTHMkT0azP3Cn0GfLFRk",
+            authDomain: "our-love-story-6ca45.firebaseapp.com",
+            databaseURL: "https://our-love-story-6ca45-default-rtdb.firebaseio.com",
+            projectId: "our-love-story-6ca45",
+            storageBucket: "our-love-story-6ca45.firebasestorage.app",
+            messagingSenderId: "140329665836",
+            appId: "1:140329665836:web:816af088b94a0f9d2bd889"
+        };
 
-    // Khởi tạo Firebase và Realtime Database
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const loveRef = db.ref('loveAlbumData');
+        // Khởi tạo Firebase và Realtime Database
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const loveRef = db.ref('loveAlbumData');
         
         const defaultPages = [
             {
@@ -721,55 +721,58 @@
             isPlayingMusic: false,
             autoPlayInterval: null,
             uploadedTempImg: null,
-            musicSource: "youtube", // Thiết lập mặc định nguồn phát là YouTube
+            musicSource: "youtube",
             youtubeId: "qhxh6Itwii4",
             localAudioUrl: null,
             pages: []
         };
 
+        // Đọc dữ liệu tự động Realtime từ Firebase
         function loadSavedState() {
-            try {
-                const savedData = localStorage.getItem('loveAlbumData');
-                if (savedData) {
-                    const parsed = JSON.parse(savedData);
-                    state.partner1 = parsed.partner1 || "Thịnh";
-                    state.partner2 = parsed.partner2 || "Ánh";
-                    state.startDate = parsed.startDate || "2021-04-18";
-                    state.albumTitle = parsed.albumTitle || "Our Eternal Love Story";
-                    state.musicSource = parsed.musicSource || "youtube";
-                    state.youtubeId = parsed.youtubeId || "qhxh6Itwii4";
-                    state.localAudioUrl = parsed.localAudioUrl || null;
-                    state.pages = parsed.pages && parsed.pages.length > 0 ? parsed.pages : [...defaultPages];
+            loveRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    state.partner1 = data.partner1 || "Thịnh";
+                    state.partner2 = data.partner2 || "Ánh";
+                    state.startDate = data.startDate || "2021-04-18";
+                    state.albumTitle = data.albumTitle || "Our Eternal Love Story";
+                    state.musicSource = data.musicSource || "youtube";
+                    state.youtubeId = data.youtubeId || "qhxh6Itwii4";
+                    state.localAudioUrl = data.localAudioUrl || null;
+                    state.pages = data.pages && data.pages.length > 0 ? data.pages : [...defaultPages];
                 } else {
                     state.pages = [...defaultPages];
+                    saveStateToFirebase();
                 }
-            } catch (e) {
-                state.pages = [...defaultPages];
-            }
-            updateHeaderAndTitles();
-            applySavedMusicSource();
+                updateHeaderAndTitles();
+                applySavedMusicSource();
+                renderBook();
+                updateLoveTimer();
+            });
         }
 
-        function saveStateToLocalStorage() {
-            try {
-                const dataToSave = {
-                    partner1: state.partner1,
-                    partner2: state.partner2,
-                    startDate: state.startDate,
-                    albumTitle: state.albumTitle,
-                    musicSource: state.musicSource,
-                    youtubeId: state.youtubeId,
-                    localAudioUrl: state.localAudioUrl,
-                    pages: state.pages
-                };
-                localStorage.setItem('loveAlbumData', JSON.stringify(dataToSave));
-            } catch (e) {}
+        // Đẩy dữ liệu lưu trực tiếp lên Firebase Realtime Database
+        function saveStateToFirebase() {
+            const dataToSave = {
+                partner1: state.partner1,
+                partner2: state.partner2,
+                startDate: state.startDate,
+                albumTitle: state.albumTitle,
+                musicSource: state.musicSource,
+                youtubeId: state.youtubeId,
+                localAudioUrl: state.localAudioUrl,
+                pages: state.pages
+            };
+            loveRef.set(dataToSave).catch((error) => {
+                console.error("Lỗi lưu Firebase:", error);
+            });
         }
 
         function resetAllData() {
             if (confirm("Bạn có chắc chắn muốn khôi phục album về dữ liệu ban đầu không?")) {
-                localStorage.removeItem('loveAlbumData');
-                location.reload();
+                loveRef.remove().then(() => {
+                    location.reload();
+                });
             }
         }
 
@@ -913,7 +916,6 @@
                 `${days} ngày ${hours.toString().padStart(2, '0')} giờ ${minutes.toString().padStart(2, '0')} phút ${seconds.toString().padStart(2, '0')} giây`;
         }
 
-        /* Tạo tự động các vòng lò xo kim loại dọc gáy sách */
         function renderSpiralRings() {
             const spiralContainer = document.getElementById('spiralContainer');
             if (!spiralContainer) return;
@@ -1173,8 +1175,7 @@
                 state.pages.splice(insertPos, 0, newMemory);
             }
 
-            saveStateToLocalStorage();
-            renderBook();
+            saveStateToFirebase();
             closeMemoryModal();
 
             const targetPage = editIndex >= 0 ? editIndex : state.pages.length - 2;
@@ -1225,8 +1226,7 @@
                 if (state.currentPage >= state.pages.length) {
                     state.currentPage = state.pages.length - 1;
                 }
-                saveStateToLocalStorage();
-                renderBook();
+                saveStateToFirebase();
             }
         }
 
@@ -1270,8 +1270,7 @@
                     } else {
                         state.pages[pageIndex].partner2Img = e.target.result;
                     }
-                    saveStateToLocalStorage();
-                    renderBook();
+                    saveStateToFirebase();
                 };
                 reader.readAsDataURL(file);
             }
@@ -1280,7 +1279,7 @@
         function updatePageContent(index, field, value) {
             if (state.pages[index]) {
                 state.pages[index][field] = value;
-                saveStateToLocalStorage();
+                saveStateToFirebase();
             }
         }
 
@@ -1351,7 +1350,7 @@
             const container = document.getElementById('youtubePlayerContainer');
             container.innerHTML = `<iframe id="ytIframe" width="200" height="200" src="https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1&loop=1&playlist=${ytId}" frameborder="0" allow="autoplay"></iframe>`;
             
-            saveStateToLocalStorage();
+            saveStateToFirebase();
             updateMusicModalUI();
             if (state.isPlayingMusic) {
                 playMusic();
@@ -1366,7 +1365,7 @@
             const bgAudio = document.getElementById('bgMusic');
             bgAudio.src = dataUrl;
             
-            saveStateToLocalStorage();
+            saveStateToFirebase();
             updateMusicModalUI();
             if (state.isPlayingMusic) {
                 playMusic();
@@ -1382,7 +1381,7 @@
             const bgAudio = document.getElementById('bgMusic');
             bgAudio.src = "https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-piano-589.mp3";
 
-            saveStateToLocalStorage();
+            saveStateToFirebase();
             updateMusicModalUI();
             if (state.isPlayingMusic) {
                 playMusic();
@@ -1519,9 +1518,8 @@
             state.albumTitle = document.getElementById('albumTitleInput').value || "Our Eternal Love Story";
 
             updateHeaderAndTitles();
-            saveStateToLocalStorage();
+            saveStateToFirebase();
             closeSettingsModal();
-            renderBook();
             updateLoveTimer();
         }
 
@@ -1571,9 +1569,6 @@
             loadSavedState();
             initParticles();
             renderSpiralRings();
-            renderBook();
-            updateLoveTimer();
-            setInterval(updateLoveTimer, 1000);
 
             document.body.addEventListener('click', function initAudioOnInteraction() {
                 if (!state.isPlayingMusic) {
